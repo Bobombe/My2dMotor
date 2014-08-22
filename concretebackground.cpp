@@ -1,5 +1,7 @@
 #include "concretebackground.h"
 #include "moteur2d.h"
+#include <iostream>
+#include <typeinfo>
 
 ConcreteBackground::ConcreteBackground(const std::string& imagePath)
 {
@@ -26,41 +28,70 @@ bool ConcreteBackground::collidedBy(AnimatedObject * ao, const sf::Vector2f & ne
     if (!m_sprite)
         return false;
 
-    sf::Vector2f posUL = newObjectPos-m_sprite->getPosition();
+
+
+    sf::FloatRect bbox=ao->getBox();
+    //sf::Vector2f oldPos = ao->getPosition();
+    /*/ Si c'est un Sprite
+    try
+    {
+        sf::Sprite& sprite = dynamic_cast<sf::Sprite&>(*ao->getDrawableObject());
+
+        sf::Image image = sprite.getTexture()->copyToImage();
+        sf::Vector2f m= Moteur2D::getInstance()->getView()->getMouseInWorld();
+
+        m=sprite.getTransform().getInverse().transformPoint(m);
+        if(m.x>0 && m.y>0&& m.x<image.getSize().x && m.y<image.getSize().y)
+            std::cout << ((int)(image.getPixel(m.x, m.y).r)) << " : " << ((int)(image.getPixel(m.x, m.y).g)) << " : " << ((int)(image.getPixel(m.x, m.y).b)) << " : " << ((int)(image.getPixel(m.x, m.y).a)) << std::endl;
+    }
+    catch (const std::bad_cast& e)
+    {
+        //std::cerr << e.what() << std::endl;
+    }//*/
+
+    // Point Haut/Gauche se place en haut à gauche de la bbox
+    sf::Vector2f posUL = sf::Vector2f(bbox.left, bbox.top);
+    //posUL += newObjectPos-oldPos;//on le déplace selon le mouvement de l'objet
+    //Si ligne suivante commentée, on reste en coordonnées globales
+    //posUL-=m_sprite->getPosition();//on le met dans les coordonnées du background
+
     sf::Vector2f posDR = posUL;
     posDR.x+=ao->getBox().width;
     posDR.y+=ao->getBox().height;
 
+    sf::FloatRect sBB = m_sprite->getGlobalBounds();
+
     // Si hors du background
-    if (posDR.x<0 || posDR.y <0 || posUL.x>m_sprite->getGlobalBounds().width || posUL.y>m_sprite->getGlobalBounds().height)
+    if (posDR.x<sBB.left || posDR.y <sBB.top || posUL.x>sBB.width+sBB.left || posUL.y>sBB.height+sBB.top)
     {
         return false;
     }
     //Si Point Haut/gauche trop en haut/gauche
-    if (posUL.x<0)
+    if (posUL.x<sBB.left)
     {
-        posUL.x=0;
+        posUL.x=sBB.left;
     }
-    if (posUL.y<0)
+    if (posUL.y<sBB.top)
     {
-        posUL.y=0;
+        posUL.y=sBB.top;
     }
 
     //Si Point Bas/droite trop en Bas/droite
-    if (posDR.x>m_sprite->getGlobalBounds().width)
+    if (posDR.x>sBB.width+sBB.left)
     {
-        posDR.x=m_sprite->getGlobalBounds().width;
+        posDR.x=sBB.width+sBB.left;
     }
-    if (posDR.y>m_sprite->getGlobalBounds().height)
+    if (posDR.y>sBB.height+sBB.top)
     {
-        posDR.y=m_sprite->getGlobalBounds().height;
+        posDR.y=sBB.height+sBB.top;
     }
 
+    // Les positions sont en coordonées globales
     for (int i = posUL.x; i <posDR.x; i++)
     {
         for (int j = posUL.y; j <posDR.y; j++)
         {
-            if (m_image.getPixel(i, j).a>128)
+            if (ao->isCollidablePoint(sf::Vector2f(i, j)) && m_image.getPixel(i-sBB.left, j-sBB.top).a>128)
                 return true;//collision
         }
     }

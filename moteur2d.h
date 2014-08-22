@@ -138,10 +138,10 @@ class Moteur2D
         //Then make the Updates needed after updating positions of objects (I don't know what yet)
         std::vector <Updatable*> m_postUpdates;
 
-        //-------- And to finish draw all --------\\
+        /*/-------- And to finish draw all --------\\
 
         // TO DO : Pour m_preDraw et m_postDraw : passer en map pouvant avoir plusieurs index égaux représentant la profondeur
-        // Dessinables avant perso et autres
+        // Dessinables avant perso et autres//*/
         std::vector <sf::Drawable*> m_preDraw;
 
         // Background tengible

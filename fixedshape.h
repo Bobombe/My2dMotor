@@ -28,6 +28,8 @@ class FixedShape : virtual public FixedObject
 
         // GETTERS
         virtual sf::Vector2f getPosition();
+
+        virtual bool isCollidablePoint(sf::Vector2f pointInGlobalCoordinate);
     protected:
         sf::Shape * m_shape;
         ShapeType m_shapeType;

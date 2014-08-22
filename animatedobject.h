@@ -33,6 +33,7 @@ class AnimatedObject : public Updatable, virtual public FixedObject
 
         virtual void checkCollision(float seconds);
         virtual bool collideWith(const sf::FloatRect &other, const sf::Vector2f & newPos);
+        virtual bool collideWith(FixedObject * fo);
 
         sf::Vector2f m_vit;
     private:

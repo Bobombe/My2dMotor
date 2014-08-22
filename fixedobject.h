@@ -12,15 +12,23 @@ class FixedObject
         FixedObject();
         virtual ~FixedObject();
 
+        //SETTERS
         virtual void setPosition(const sf::Vector2f &pos) = 0;
+
+        //GETTERS
         virtual sf::Vector2f getPosition() = 0;
         virtual sf::FloatRect getBox()
         {
-            m_bBox.left=getPosition().x;
-            m_bBox.top=getPosition().y;
             return m_bBox;
         }
+        virtual sf::Drawable* getDrawableObject()
+        {
+            return m_drawableObject;
+        }
 
+        virtual bool isCollidablePoint(sf::Vector2f pointInGlobalCoordinate)=0;
+
+        // OPERATORS
         bool operator !=(const FixedObject &b) const
         {
             return b.m_indexOfDO != m_indexOfDO;

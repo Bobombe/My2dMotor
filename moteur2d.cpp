@@ -65,6 +65,7 @@ void Moteur2D::run()
     EventManager em;
     m_t = m_clock.getElapsedTime();
     sf::Time t2;
+    float s;
 
 
     while(m_window->isOpen())
@@ -72,8 +73,12 @@ void Moteur2D::run()
         // On efface la fenètre dès le début pour permettre aux Updatables de déssiner
         m_window->clear();// efface la fenètre
 
-        t2 = m_clock.getElapsedTime();
-        float s = (t2-m_t).asSeconds() ;
+        do
+        {
+            t2 = m_clock.getElapsedTime();
+            s = (t2-m_t).asSeconds() ;
+        }while (s<1/60.);
+        std::cout << (1/s) << std::endl;
 
         // First called by eventmanager
         em.eventLoop(*m_window);

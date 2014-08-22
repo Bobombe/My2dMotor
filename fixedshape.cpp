@@ -90,6 +90,7 @@ void FixedShape::setPosition(const sf::Vector2f &pos)
     {
         sf::Shape& c = dynamic_cast<sf::Shape&>(*m_drawableObject);
         c.setPosition(pos);
+        m_bBox=c.getGlobalBounds();
     }
     catch (const std::bad_cast& e)
     {
@@ -111,6 +112,33 @@ sf::Vector2f FixedShape::getPosition()
         std::cerr << e.what() << std::endl;
     }
     return sf::Vector2f();
+
+}
+
+bool FixedShape::isCollidablePoint(sf::Vector2f pointInGlobalCoordinate)
+{
+
+    pointInGlobalCoordinate=m_shape->getTransform().getInverse().transformPoint(pointInGlobalCoordinate);
+    if(pointInGlobalCoordinate.x>0 && pointInGlobalCoordinate.y>0&&
+       pointInGlobalCoordinate.x<m_bBox.width && pointInGlobalCoordinate.y<m_bBox.height)
+    {
+        if (m_shapeType == CIRCLE)
+        {
+            // Si dans le cercle
+            if(
+            ((pointInGlobalCoordinate.x-m_bBox.width/2.)*(pointInGlobalCoordinate.x-m_bBox.width/2.)+
+            (pointInGlobalCoordinate.y-m_bBox.height/2.)*(pointInGlobalCoordinate.y-m_bBox.height/2.))
+               <(m_bBox.width/2.)*(m_bBox.width/2.)
+               )
+            {
+                return true;
+            }
+            return false;
+        }
+        return true;
+    }
+    return false;
+
 
 }
 /*
